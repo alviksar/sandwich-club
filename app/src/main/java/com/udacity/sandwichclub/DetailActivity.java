@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.udacity.sandwichclub.model.Sandwich;
 import com.udacity.sandwichclub.utils.JsonUtils;
+
+import java.util.List;
 
 public class DetailActivity extends AppCompatActivity {
 
@@ -52,7 +55,7 @@ public class DetailActivity extends AppCompatActivity {
 
         String[] sandwiches = getResources().getStringArray(R.array.sandwich_details);
         String json = sandwiches[position];
-        mSandwich  = JsonUtils.parseSandwichJson(json);
+        mSandwich = JsonUtils.parseSandwichJson(json);
         if (mSandwich == null) {
             // Sandwich data unavailable
             closeOnError();
@@ -72,6 +75,22 @@ public class DetailActivity extends AppCompatActivity {
         Toast.makeText(this, R.string.detail_error_message, Toast.LENGTH_SHORT).show();
     }
 
+    private String populateFromList(List<String> list) {
+
+        StringBuilder result = new StringBuilder();
+        if (list != null) {
+            for (int i = 0; i < list.size(); i++) {
+                result.append(list.get(i));
+                if (i < list.size() - 1) {
+                    result.append(", ");
+                } else {
+                    if (list.size() > 1) result.append(".");
+                }
+            }
+        }
+        return result.toString();
+    }
+
     private void populateUI() {
 
         if (mSandwich == null) {
@@ -83,20 +102,16 @@ public class DetailActivity extends AppCompatActivity {
         mDescription.setText(mSandwich.getDescription());
 
         // Make list of names
-        if (mSandwich.getAlsoKnownAs() != null){
-            mAlsoKnownAs.setText("");
-            for (String name: mSandwich.getAlsoKnownAs()
-                    ) {
-                mAlsoKnownAs.append(name);
-            }
+        String alsoKnownAs = populateFromList(mSandwich.getAlsoKnownAs());
+        if (TextUtils.isEmpty(alsoKnownAs)) {
+            mAlsoKnownAs.setVisibility(View.GONE);
+            findViewById(R.id.also_known_label_tv).setVisibility(View.GONE);
+
+        } else {
+            mAlsoKnownAs.setText(alsoKnownAs);
         }
+
         // Make list of ingredients
-        if (mSandwich.getIngredients() != null){
-            mIngredients.setText("");
-            for (String ingredient: mSandwich.getIngredients()
-                 ) {
-                mIngredients.append(ingredient);
-            }
-        }
+        mIngredients.setText(populateFromList(mSandwich.getIngredients()));
     }
 }
