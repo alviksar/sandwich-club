@@ -98,8 +98,12 @@ public class DetailActivity extends AppCompatActivity {
             return;
         }
 
-        mPlaceOfOrigin.setText(mSandwich.getPlaceOfOrigin());
-        mDescription.setText(mSandwich.getDescription());
+        if (TextUtils.isEmpty(mSandwich.getPlaceOfOrigin())) {
+            mPlaceOfOrigin.setVisibility(View.GONE);
+            findViewById(R.id.origin_label_tv).setVisibility(View.GONE);
+        } else {
+            mPlaceOfOrigin.setText(mSandwich.getPlaceOfOrigin());
+        }
 
         // Make list of names
         String alsoKnownAs = populateFromList(mSandwich.getAlsoKnownAs());
@@ -113,5 +117,7 @@ public class DetailActivity extends AppCompatActivity {
 
         // Make list of ingredients
         mIngredients.setText(populateFromList(mSandwich.getIngredients()));
+
+        mDescription.setText(mSandwich.getDescription());
     }
 }
